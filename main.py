@@ -4,7 +4,14 @@ import streamlit as st
 
 
 API_URL = "https://api.open-meteo.com/v1/forecast"
+TOKYO = {"latitude": 35.6762, "longitude": 139.6503}
 OSAKA = {"latitude": 34.6937, "longitude": 135.5023}
+NAGANO = {"latitude": 36.6513, "longitude": 138.1810}
+CITIES = {
+	"東京": {**TOKYO, "timezone": "Asia/Tokyo"},
+	"大阪": {**OSAKA, "timezone": "Asia/Tokyo"},
+	"長野": {**NAGANO, "timezone": "Asia/Tokyo"},
+}
 WEATHER_CODES = {
 	0: "快晴",
 	1: "おおむね晴れ",
@@ -73,13 +80,15 @@ def get_weather_group(code):
 
 
 @st.cache_data(ttl=1800)
-def get_forecast():
+def get_forecast(city_name):
+	city = CITIES[city_name]
 	response = requests.get(
 		API_URL,
 		params={
-			**OSAKA,
+			"latitude": city["latitude"],
+			"longitude": city["longitude"],
 			"daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum",
-			"timezone": "Asia/Tokyo",
+			"timezone": city["timezone"],
 			"forecast_days": 7,
 		},
 		timeout=15,
@@ -88,12 +97,13 @@ def get_forecast():
 	return response.json()
 
 
-st.set_page_config(page_title="大阪の週間天気予報", page_icon="🌤️", layout="centered")
-st.title("大阪の週間天気予報")
+st.set_page_config(page_title="週間天気予報", page_icon="🌤️", layout="centered")
+selected_city = st.selectbox("都市を選択", options=list(CITIES))
+st.title(f"{selected_city}の週間天気予報")
 st.caption("Open-Meteoの予報データを使用しています。")
 
 try:
-	forecast = get_forecast()
+	forecast = get_forecast(selected_city)
 	daily = forecast["daily"]
 	weather = pd.DataFrame(
 		{
