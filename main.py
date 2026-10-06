@@ -36,6 +36,41 @@ WEATHER_CODES = {
 	99: "強いひょうを伴う雷雨",
 }
 
+WEATHER_GROUPS = {
+	0: "晴れ",
+	1: "晴れ",
+	2: "曇り",
+	3: "曇り",
+	45: "霧",
+	48: "霧",
+	51: "雨",
+	53: "雨",
+	55: "雨",
+	56: "雨",
+	57: "雨",
+	61: "雨",
+	63: "雨",
+	65: "雨",
+	66: "雨",
+	67: "雨",
+	71: "雪",
+	73: "雪",
+	75: "雪",
+	77: "雪",
+	80: "雨",
+	81: "雨",
+	82: "雨",
+	85: "雪",
+	86: "雪",
+	95: "雷",
+	96: "雷",
+	99: "雷",
+}
+
+
+def get_weather_group(code):
+	return WEATHER_GROUPS.get(code, "その他")
+
 
 @st.cache_data(ttl=1800)
 def get_forecast():
@@ -63,6 +98,7 @@ try:
 	weather = pd.DataFrame(
 		{
 			"日付": pd.to_datetime(daily["time"]).date,
+			"天気区分": [get_weather_group(code) for code in daily["weather_code"]],
 			"天気": [WEATHER_CODES.get(code, "不明") for code in daily["weather_code"]],
 			"最高気温 (°C)": daily["temperature_2m_max"],
 			"最低気温 (°C)": daily["temperature_2m_min"],
