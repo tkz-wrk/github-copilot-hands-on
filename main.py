@@ -4,7 +4,7 @@ import streamlit as st
 
 
 API_URL = "https://api.open-meteo.com/v1/forecast"
-TOKYO = {"latitude": 35.6762, "longitude": 139.6503}
+OSAKA = {"latitude": 34.6937, "longitude": 135.5023}
 WEATHER_CODES = {
 	0: "快晴",
 	1: "おおむね晴れ",
@@ -42,7 +42,7 @@ def get_forecast():
 	response = requests.get(
 		API_URL,
 		params={
-			**TOKYO,
+			**OSAKA,
 			"daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum",
 			"timezone": "Asia/Tokyo",
 			"forecast_days": 7,
@@ -53,8 +53,8 @@ def get_forecast():
 	return response.json()
 
 
-st.set_page_config(page_title="東京の週間天気予報", page_icon="🌤️", layout="centered")
-st.title("東京の週間天気予報")
+st.set_page_config(page_title="大阪の週間天気予報", page_icon="🌤️", layout="centered")
+st.title("大阪の週間天気予報")
 st.caption("Open-Meteoの予報データを使用しています。")
 
 try:
